@@ -23,9 +23,10 @@
   var size = function (bytes) { return bytes >= 1e6 ? (bytes / 1e6).toFixed(1) + " MB" : Math.max(1, Math.round(bytes / 1e3)) + " KB"; };
 
   /* FilmHero: TMDB poster in the bar, the chosen TMDB backdrop behind (or the poster blurred). Never a film frame. */
-  function FilmHero(film) {
-    var backdrop = el("div", { "class": "film-hero__backdrop" + (film.backdrop ? "" : " film-hero__backdrop--blurred"),
-      style: "background-image:url('" + (film.backdrop || film.poster || "") + "')" });
+  function FilmHero(film, options) {
+    var blurred = !film.backdrop || (options && options.blurred);
+    var backdrop = el("div", { "class": "film-hero__backdrop" + (blurred ? " film-hero__backdrop--blurred" : ""),
+      style: "background-image:url('" + ((blurred ? film.poster : film.backdrop) || film.backdrop || "") + "')" });
     var meta = [film.director, film.year, film.runtime].filter(Boolean).join(" · ");
     var eyebrow = el("p", { "class": "film-hero__eyebrow" }, [
       el("span", { "class": "long", text: "Film analysis · Tag Segmentation Method" }), el("span", { "class": "short", text: "Film analysis · TSM" })]);
@@ -33,7 +34,7 @@
       el("p", { "class": "film-hero__credit", text: "Poster & backdrop: TMDB" }), eyebrow,
       el("h1", { "class": "film-hero__title", text: film.heroTitle || film.title }), el("p", { "class": "film-hero__meta", text: meta })]);
     var inner = el("div", { "class": "film-hero__inner" }, [film.poster ? el("img", { "class": "film-hero__poster", src: film.poster, alt: film.title + " poster" }) : null, text]);
-    return el("header", { "class": "film-hero" }, [backdrop, inner]);
+    return el("header", { "class": "film-hero" + (options && options.modifier ? " film-hero--" + options.modifier : "") }, [backdrop, inner]);
   }
 
   /* MediaPlayer: the still at rest; the WebP loop on hover (desktop) or touch-and-hold (phone); click or tap plays the clip.
@@ -121,7 +122,26 @@
     root.appendChild(card);
   }
 
+  /* Withdrawn (board PB6): the film hero and a calm notice. Never the withdrawn item's title, description, media,
+     codes or marks. Links only to what is still live. */
+  function renderWithdrawn(data) {
+    document.title = "Withdrawn · " + data.film.title;
+    var root = document.getElementById("app");
+    root.appendChild(FilmHero(data.film, { blurred: true, modifier: "withdrawn" }));
+    var links = el("div", { "class": "withdrawn__actions" }, [
+      data.current ? el("a", { "class": "button button--primary", href: data.current.href }, [document.createTextNode("See the current version (v" + data.current.version + ")"), icon("M6 3.5L10.5 8 6 12.5")]) : null,
+      data.film.package ? el("a", { "class": "button", href: data.film.package }, [document.createTextNode("Whole film analysis"), icon("M6 3.5L10.5 8 6 12.5")]) : null]);
+    root.appendChild(el("main", { "class": "withdrawn" }, [
+      el("span", { "class": "withdrawn__icon" }, [icon("M8 1.8a6.2 6.2 0 100 12.4A6.2 6.2 0 008 1.8zM1.8 8h12.4M8 1.8c1.7 1.7 2.5 3.8 2.5 6.2S9.7 12.5 8 14.2C6.3 12.5 5.5 10.4 5.5 8S6.3 3.5 8 1.8z")]),
+      el("h1", { "class": "withdrawn__title", text: "This analysis has been withdrawn" }),
+      el("p", { "class": "withdrawn__lead", text: "The " + (data.scope === "package" ? "film package" : "card") + " that was published at this address is no longer available." }),
+      el("p", { "class": "withdrawn__meta", text: [data.item ? data.item.kindLabel + " " + data.item.code : null, data.version ? "v" + data.version : null, "withdrawn " + data.withdrawn].filter(Boolean).join(" · ") }),
+      links,
+      el("footer", { "class": "withdrawn__footer" }, [el("p", { text: "Substrata — Tag Segmentation Method · " + data.analyst }), el("p", { text: data.notice })])]));
+  }
+
   var data = JSON.parse(document.getElementById("substrata-data").textContent);
   if (data.page === "card") renderCard(data);
+  else if (data.page === "withdrawn") renderWithdrawn(data);
   window.Substrata = { FilmHero: FilmHero, MediaPlayer: MediaPlayer, CodePills: CodePills, MarksList: MarksList, CreditBlock: CreditBlock };
 })();

@@ -101,6 +101,19 @@ img, video { display: block; max-width: 100%; }
 .index li { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
 .index li a { text-decoration: none; } .index li small { color: var(--text-3); margin-left: 8px; }
 
+/* Withdrawn page (board PB6): the film hero stays; nothing of the withdrawn analysis is shown. */
+.withdrawn { max-width: 960px; margin: 0 auto; padding: 44px var(--gutter) 40px; text-align: center; }
+.withdrawn__icon { display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border: 1px solid var(--line-2);
+  border-radius: 9px; background: #121821; color: var(--text-2); margin-bottom: 22px; }
+.withdrawn__icon svg { width: 15px; height: 15px; }
+.withdrawn__title { font-size: 25px; line-height: 1.25; font-weight: 600; margin: 0 0 8px; }
+.withdrawn__lead { font-size: 16px; line-height: 1.5; color: var(--text-1); margin: 0 0 12px; }
+.withdrawn__meta { font: 12.5px var(--mono); color: var(--text-3); margin: 0 0 18px; }
+.withdrawn__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.button--primary { background: #F2F4F8; border-color: #F2F4F8; color: #0B0E13; font-weight: 600; }
+.withdrawn__footer { margin-top: 48px; font-size: 11.5px; line-height: 1.6; color: var(--text-3); }
+.withdrawn__footer p { margin: 0; }
+
 /* Phone (QR3 left, 390 wide) */
 @media (max-width: 700px) {
   :root { --gutter: 18px; }
@@ -112,4 +125,9 @@ img, video { display: block; max-width: 100%; }
   .card { grid-template-columns: 1fr; grid-template-areas: "media" "item" "credit"; padding-top: 14px; }
   .card__credit { margin-top: 18px; }
   .item__title { font-size: 19px; }
+  .withdrawn { text-align: left; padding-top: 22px; }
+  .withdrawn__icon { margin-bottom: 14px; }
+  .withdrawn__title { font-size: 20px; } .withdrawn__lead { font-size: 14.5px; }
+  .withdrawn__actions { flex-direction: column; align-items: flex-start; }
+  .withdrawn__footer { margin-top: 28px; }
 }
